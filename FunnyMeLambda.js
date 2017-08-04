@@ -18,7 +18,7 @@ exports.handler = (event, context) => {
         console.log(`LAUNCH REQUEST`);
         context.succeed(
           buildResponse(
-            buildSpeechletResponse("Welcome to an Alexa Skill, this is running on a deployed lambda function", true),
+            buildSpeechletResponse("Welcome to Fun Me. Say 'Tell a joke' ", false),
             {}
           )
         );
@@ -82,7 +82,7 @@ function buildSpeechletResponse(output, shouldEndSession) {
     };
 }
 
-function buildResponse(sessionAttributes, speechletResponse) {
+function buildResponse(speechletResponse, sessionAttributes) {
     return {
         version: '1.0',
         sessionAttributes,
