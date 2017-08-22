@@ -18,7 +18,7 @@ exports.handler = (event, context) => {
         console.log(`LAUNCH REQUEST`);
         context.succeed(
           buildResponse(
-            buildSpeechletResponse("Welcome to Fun Me. Say 'Tell a joke' ", false),
+            buildSpeechletResponse("Welcome to Fun Me. Say 'Tell a joke' and then your name.", false),
             {}
           )
         );
@@ -31,23 +31,55 @@ exports.handler = (event, context) => {
         switch (event.request.intent.name) {
             
         case "GetJoke":
-
-        var endpoint = "http://api.icndb.com/jokes/random?firstName=Vig&lastName=nesh&exclude=[explicit]"
+            
+        var name = event.request.intent.slots.userName.value
+        var endpoint = `http://api.icndb.com/jokes/random?firstName=${name}&lastName=&exclude=[explicit]`
         var body = "";
-        
-        http.get(endpoint, (response) => {
+            
+         http.get(endpoint, (response) => {
             response.on('data', (chunk) => {body += chunk})
             response.on('end', () => {
                 var data = JSON.parse(body);
                 var randJoke = data.value.joke;
                 context.succeed(
                     buildResponse(
-                        buildSpeechletResponse(`${randJoke}`, true),
+                        buildSpeechletResponse(`${randJoke}`, false),
                         {}
                     )
                 )
             })
         })
+        break;
+        
+        case "AMAZON.HelpIntent":
+            
+            var message = "Fun Me is a skill that tells you Chuck Norris Jokes, but with a small change. It replaces the phrase 'Chuck Norris' with your name!" 
+                        + " Just say 'Alexa, tell a joke', and then your first name. To hear another joke, say 'next' and then your name."
+            
+            context.succeed(
+                buildResponse(
+                    buildSpeechletResponse(`${message}`, false),
+                    {}
+                )
+            )
+        break;
+        
+        case "AMAZON.CancelIntent":
+            context.succeed(
+                buildResponse(
+                    buildSpeechletResponse("Ok. Goodbye!", true),
+                    {}
+                )
+            )
+        break;
+        
+        case "AMAZON.StopIntent":
+            context.succeed(
+                buildResponse(
+                    buildSpeechletResponse("Ok. Goodbye!", true),
+                    {}
+                )
+            )
         break;
         
         default:
